@@ -1,10 +1,30 @@
 var langeroids = require('langeroids/lib/langeroids.js');
+var _ = langeroids._;
 var Game = require('langeroids/lib/game.js');
 var Canvas2dRenderer = require('langeroids/lib/canvas-2d-renderer.js');
 var Timer = require('langeroids/lib/timer.js');
 
 var Grid = require('../lib/grid.js');
 var GridLogic = require('../lib/grid-logic.js');
+
+var GameOfLife = require('../lib/logic/game-of-life.js');
+var BriansBrain = require('../lib/logic/brians-brain.js');
+
+var demoData = require('./demo-data.js');
+
+_.extend(GridLogic.prototype, {
+    init: function() {
+        this.automata = {
+            'gameOfLife': new GameOfLife(),
+            'briansBrain': new BriansBrain()
+        };
+        this.currentAutomaton = 'gameOfLife';
+    },
+
+    updateStates: function() {
+        return this.automata[this.currentAutomaton].tick(this.grid);
+    }
+});
 
 (function() {
     var game = new Game();
@@ -15,74 +35,65 @@ var GridLogic = require('../lib/grid-logic.js');
 
     game.addComponent({
         onInit: function(game) {
-            this.grid = new Grid({
-                width: 30,
-                height: 13
-            });
+            this.demoRound = 0;
+            this.demoIsInitialized = false;
+            this.gridStepTimer = new Timer({ game: game, tDuration: 125 });
 
-            // Glider
-            /*
-            this.grid.setCell(6, 5, 1);
-            this.grid.setCell(7, 5, 1);
-            this.grid.setCell(5, 6, 1);
-            this.grid.setCell(7, 6, 1);
-            this.grid.setCell(7, 7, 1);
-            */
-
-            // Beehive
-            this.grid.setCell(9, 0, 1);
-            this.grid.setCell(10, 0, 1);
-            this.grid.setCell(8, 1, 1);
-            this.grid.setCell(11, 1, 1);
-            this.grid.setCell(9, 2, 1);
-            this.grid.setCell(10, 2, 1);
-
-            // Boat
-            this.grid.setCell(17, 0, 1);
-            this.grid.setCell(18, 0, 1);
-            this.grid.setCell(17, 1, 1);
-            this.grid.setCell(18, 2, 1);
-            this.grid.setCell(19, 1, 1);
-
-            // Beacon
-            this.grid.setCell(0, 0, 1);
-            this.grid.setCell(1, 0, 1);
-            this.grid.setCell(0, 1, 1);
-            this.grid.setCell(1, 1, 1);
-            this.grid.setCell(2, 2, 1);
-            this.grid.setCell(3, 2, 1);
-            this.grid.setCell(2, 3, 1);
-            this.grid.setCell(3, 3, 1);
-
-            // Blinker
-            this.grid.setCell(26, 3, 1);
-            this.grid.setCell(26, 4, 1);
-            this.grid.setCell(26, 5, 1);
-
-            // Lightweight Spaceship
-            this.grid.setCell(5, 6, 1);
-            this.grid.setCell(6, 6, 1);
-            this.grid.setCell(7, 6, 1);
-            this.grid.setCell(8, 6, 1);
-            this.grid.setCell(4, 7, 1);
-            this.grid.setCell(4, 9, 1);
-            this.grid.setCell(7, 9, 1);
-            this.grid.setCell(8, 7, 1);
-            this.grid.setCell(8, 8, 1);
-
+            this.grid = new Grid();
             this.gridLogic = new GridLogic({
                 grid: this.grid
             });
+
+            this.initGrid();
+        },
+
+        initGrid: function() {
+            var data = this.roundData = demoData[this.demoRound];
+
+            this.gridLogic.generation = 0;
+            this.grid.clearCells();
+            if (data) {
+                this.grid.width = data.gridWidth;
+                this.grid.height = data.gridHeight;
+                this.gridLogic.currentAutomaton = data.automaton;
+
+                var cells = (data.randomCells) ? this.getRandomCells() : data.cells;
+
+                for (var i = 0; i < cells.length; i++) {
+                    this.grid.setCell(cells[i][0], cells[i][1], cells[i][2]);
+                }
+            }
 
             var renderer = game.getComponent('renderer');
             this.cellWidth = Math.round(renderer.width / this.grid.width);
             this.cellHeight = Math.round(renderer.height / this.grid.height);
 
-            this.gridStepTimer = new Timer({ game: game, tDuration: 125 });
+            this.demoIsInitialized = true;
+        },
+
+        getRandomCells: function() {
+            var cells = [];
+            for (var y = 0; y < this.grid.height; y++) {
+                for (var x = 0; x < this.grid.width; x++) {
+                    if (Math.random() > 0.95) {
+                        cells.push([ x, y, 1 ]);
+                    }
+                }
+            }
+            return cells;
         },
 
         onUpdate: function() {
             if (this.gridStepTimer.done()) {
+                if (!this.demoIsInitialized) {
+                    this.initGrid();
+                }
+
+                if (this.gridLogic.generation >= this.roundData.lifetime) {
+                    this.demoRound = (this.demoRound + 1) % demoData.length;
+                    this.demoIsInitialized = false;
+                }
+
                 this.gridLogic.tick();
                 this.gridStepTimer.repeat();
             }
@@ -92,13 +103,28 @@ var GridLogic = require('../lib/grid-logic.js');
             var ctx = renderer.ctx;
             renderer.clear('rgb(0,0,0)');
 
+            var borderColors = this.roundData.borderColors;
+            if (borderColors.length === 1) ctx.strokeStyle = borderColors[0];
+
+            var fillColors = this.roundData.fillColors;
+            if (!fillColors.length) ctx.fillStyle = 'rgba(23, 84, 187, 0.8)';
+            else if (fillColors.length === 1) ctx.fillStyle = fillColors[0];
+
             // draw grid
-            ctx.strokeStyle = 'rgba(23,84,187,0.5)';
-            ctx.fillStyle = 'rgba(23, 84, 187, 0.8)';
             for (var y = 0; y < this.grid.height; y++) {
                 for (var x = 0; x < this.grid.width; x++) {
-                    ctx.strokeRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
-                    if (this.grid.getCell(x, y)) {
+                    if (borderColors.length > 1) {
+                        ctx.strokeStyle = borderColors[state];
+                    }
+                    if (borderColors.length) {
+                        ctx.strokeRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
+                    }
+
+                    var state = this.grid.getCell(x, y);
+                    if (state) {
+                        if (fillColors.length > 1) {
+                            ctx.fillStyle = fillColors[state];
+                        }
                         ctx.fillRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
                     }
                 }
