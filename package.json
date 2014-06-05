@@ -1,0 +1,6 @@
+{
+    "name": "cellular-automata",
+    "dependencies": {
+        "underscore": ""
+    }
+}

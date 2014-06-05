@@ -1,0 +1,15 @@
+{
+    "name": "cellular-automata-example",
+    "dependencies": {
+        "langeroids": "jletellier/langeroids"
+    },
+    "devDependencies": {
+        "browserify": "",
+        "beefy": "",
+        "uglify-js": "1.x"
+    },
+    "scripts": {
+        "start": "beefy main.js:bundle.js",
+        "prepublish": "browserify ./main.js | uglifyjs -c > ./bundle.js"
+    }
+}
