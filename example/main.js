@@ -10,6 +10,7 @@ var GridLogic = require('../lib/grid-logic.js');
 var GameOfLife = require('../lib/logic/game-of-life.js');
 var BriansBrain = require('../lib/logic/brians-brain.js');
 var Wireworld = require('../lib/logic/wireworld.js');
+var HighLife = require('../lib/logic/high-life.js');
 
 var demoData = require('./demo-data.js');
 
@@ -18,7 +19,8 @@ _.extend(GridLogic.prototype, {
         this.automata = {
             'gameOfLife': new GameOfLife(),
             'briansBrain': new BriansBrain(),
-            'wireworld': new Wireworld()
+            'wireworld': new Wireworld(),
+            'highLife': new HighLife()
         };
         this.currentAutomaton = 'gameOfLife';
     },
@@ -79,7 +81,7 @@ _.extend(GridLogic.prototype, {
             var cells = [];
             for (var y = 0; y < this.grid.height; y++) {
                 for (var x = 0; x < this.grid.width; x++) {
-                    if (Math.random() > 0.95) {
+                    if (Math.random() > 0.92) {
                         cells.push([ x, y, 1 ]);
                     }
                 }

@@ -1,5 +1,43 @@
 module.exports = [
     {
+        gridWidth: 120,
+        gridHeight: 40,
+        automaton: 'briansBrain',
+        step: 125,
+        lifetime: 100,
+        borderColors: [],
+        fillColors: [
+            '',
+            'rgba(23, 187, 84, 0.8)',
+            'rgba(23, 187, 84, 0.5)'
+        ],
+        randomCells: true
+    },
+    {
+        gridWidth: 150,
+        gridHeight: 50,
+        automaton: 'highLife',
+        step: 40,
+        lifetime: 380,
+        borderColors: [ 'rgba(187, 84, 23, 0.1)' ],
+        fillColors: [ 'rgba(187, 84, 23, 0.8)' ],
+        cells: [
+            // Replicator
+            [ 72, 25, 1 ],
+            [ 73, 24, 1 ],
+            [ 74, 23, 1 ],
+            [ 75, 23, 1 ],
+            [ 76, 23, 1 ],
+            [ 76, 24, 1 ],
+            [ 76, 25, 1 ],
+            [ 75, 26, 1 ],
+            [ 74, 27, 1 ],
+            [ 73, 27, 1 ],
+            [ 72, 27, 1 ],
+            [ 72, 26, 1 ]
+        ]
+    },
+    {
         gridWidth: 150,
         gridHeight: 50,
         automaton: 'gameOfLife',
@@ -15,20 +53,6 @@ module.exports = [
             [ 75, 26, 1 ],
             [ 76, 24, 1 ]
         ]
-    },
-    {
-        gridWidth: 120,
-        gridHeight: 40,
-        automaton: 'briansBrain',
-        step: 125,
-        lifetime: 100,
-        borderColors: [],
-        fillColors: [
-            '',
-            'rgba(23, 187, 84, 0.8)',
-            'rgba(23, 187, 84, 0.5)'
-        ],
-        randomCells: true
     },
     {
         gridWidth: 38,
@@ -167,6 +191,7 @@ module.exports = [
             [ 2, 9, 2 ]
         ]
     }
+
     /*
      {
      gridWidth: 60,
