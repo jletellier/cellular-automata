@@ -9,6 +9,7 @@ var GridLogic = require('../lib/grid-logic.js');
 
 var GameOfLife = require('../lib/logic/game-of-life.js');
 var BriansBrain = require('../lib/logic/brians-brain.js');
+var Wireworld = require('../lib/logic/wireworld.js');
 
 var demoData = require('./demo-data.js');
 
@@ -16,7 +17,8 @@ _.extend(GridLogic.prototype, {
     init: function() {
         this.automata = {
             'gameOfLife': new GameOfLife(),
-            'briansBrain': new BriansBrain()
+            'briansBrain': new BriansBrain(),
+            'wireworld': new Wireworld()
         };
         this.currentAutomaton = 'gameOfLife';
     },
@@ -56,6 +58,8 @@ _.extend(GridLogic.prototype, {
                 this.grid.width = data.gridWidth;
                 this.grid.height = data.gridHeight;
                 this.gridLogic.currentAutomaton = data.automaton;
+
+                if (data.step) this.gridStepTimer.tDuration = data.step;
 
                 var cells = (data.randomCells) ? this.getRandomCells() : data.cells;
 
@@ -113,14 +117,15 @@ _.extend(GridLogic.prototype, {
             // draw grid
             for (var y = 0; y < this.grid.height; y++) {
                 for (var x = 0; x < this.grid.width; x++) {
+                    var state = this.grid.getCell(x, y);
+
                     if (borderColors.length > 1) {
-                        ctx.strokeStyle = borderColors[state];
+                        ctx.strokeStyle = borderColors[state || 0];
                     }
                     if (borderColors.length) {
                         ctx.strokeRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
                     }
 
-                    var state = this.grid.getCell(x, y);
                     if (state) {
                         if (fillColors.length > 1) {
                             ctx.fillStyle = fillColors[state];
