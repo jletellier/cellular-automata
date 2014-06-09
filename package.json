@@ -2,5 +2,15 @@
     "name": "cellular-automata",
     "dependencies": {
         "underscore": ""
+    },
+    "devDependencies": {
+        "langeroids": "jletellier/langeroids",
+        "browserify": "",
+        "beefy": "",
+        "uglify-js": "1.x"
+    },
+    "scripts": {
+        "start": "beefy example/main.js:example/bundle.js",
+        "prepublish": "browserify ./example/main.js | uglifyjs -c > ./example/bundle.js"
     }
 }
