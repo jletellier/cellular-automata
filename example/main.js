@@ -11,6 +11,7 @@ var GameOfLife = require('../lib/logic/game-of-life.js');
 var BriansBrain = require('../lib/logic/brians-brain.js');
 var Wireworld = require('../lib/logic/wireworld.js');
 var HighLife = require('../lib/logic/high-life.js');
+var FractalLike = require('../lib/logic/fractal-like.js');
 
 var demoData = require('./demo-data.js');
 
@@ -20,7 +21,8 @@ _.extend(GridLogic.prototype, {
             'gameOfLife': new GameOfLife(),
             'briansBrain': new BriansBrain(),
             'wireworld': new Wireworld(),
-            'highLife': new HighLife()
+            'highLife': new HighLife(),
+            'fractalLike': new FractalLike()
         };
         this.currentAutomaton = 'gameOfLife';
     },
@@ -34,12 +36,14 @@ _.extend(GridLogic.prototype, {
     var game = new Game();
 
     game.addComponent(new Canvas2dRenderer({
-        canvas: 'canvas'
+        canvas: 'canvas',
+        width: 600,
+        height: 200
     }));
 
     game.addComponent({
         onInit: function(game) {
-            this.demoRound = 0;
+            this.demoRound = Math.floor(Math.random() * demoData.length);
             this.demoIsInitialized = false;
             this.gridStepTimer = new Timer({ game: game, tDuration: 125 });
 
