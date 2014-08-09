@@ -5,7 +5,6 @@ var Canvas2dRenderer = require('langeroids/lib/canvas-2d-renderer.js');
 var Timer = require('langeroids/lib/timer.js');
 
 var Grid = require('../lib/grid.js');
-var GridLogic = require('../lib/grid-logic.js');
 
 var GameOfLife = require('../lib/logic/game-of-life.js');
 var BriansBrain = require('../lib/logic/brians-brain.js');
@@ -14,23 +13,6 @@ var HighLife = require('../lib/logic/high-life.js');
 var FractalLike = require('../lib/logic/fractal-like.js');
 
 var demoData = require('./demo-data.js');
-
-_.extend(GridLogic.prototype, {
-    init: function() {
-        this.automata = {
-            'gameOfLife': new GameOfLife(),
-            'briansBrain': new BriansBrain(),
-            'wireworld': new Wireworld(),
-            'highLife': new HighLife(),
-            'fractalLike': new FractalLike()
-        };
-        this.currentAutomaton = 'gameOfLife';
-    },
-
-    updateStates: function() {
-        return this.automata[this.currentAutomaton].tick(this.grid);
-    }
-});
 
 (function() {
     var game = new Game();
@@ -43,14 +25,19 @@ _.extend(GridLogic.prototype, {
 
     game.addComponent({
         onInit: function(game) {
+            this.automata = {
+                'gameOfLife': new GameOfLife(),
+                'briansBrain': new BriansBrain(),
+                'wireworld': new Wireworld(),
+                'highLife': new HighLife(),
+                'fractalLike': new FractalLike()
+            };
+
             this.demoRound = Math.floor(Math.random() * demoData.length);
             this.demoIsInitialized = false;
             this.gridStepTimer = new Timer({ game: game, tDuration: 125 });
 
             this.grid = new Grid();
-            this.gridLogic = new GridLogic({
-                grid: this.grid
-            });
 
             this.initGrid();
         },
@@ -58,12 +45,12 @@ _.extend(GridLogic.prototype, {
         initGrid: function() {
             var data = this.roundData = demoData[this.demoRound];
 
-            this.gridLogic.generation = 0;
+            this.grid.generation = 0;
             this.grid.clearCells();
             if (data) {
                 this.grid.width = data.gridWidth;
                 this.grid.height = data.gridHeight;
-                this.gridLogic.currentAutomaton = data.automaton;
+                this.grid.automaton = this.automata[data.automaton];
 
                 if (data.step) this.gridStepTimer.tDuration = data.step;
 
@@ -99,12 +86,12 @@ _.extend(GridLogic.prototype, {
                     this.initGrid();
                 }
 
-                if (this.gridLogic.generation >= this.roundData.lifetime) {
+                if (this.grid.generation >= this.roundData.lifetime) {
                     this.demoRound = (this.demoRound + 1) % demoData.length;
                     this.demoIsInitialized = false;
                 }
 
-                this.gridLogic.tick();
+                this.grid.update();
                 this.gridStepTimer.repeat();
             }
         },
