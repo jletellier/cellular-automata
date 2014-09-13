@@ -1,16 +1,11 @@
 {
     "name": "cellular-automata",
     "dependencies": {
-        "underscore": ""
+        "underscore": "1.7.0"
     },
     "devDependencies": {
         "langeroids": "jletellier/langeroids",
-        "browserify": "",
-        "beefy": "",
-        "uglify-js": "1.x"
-    },
-    "scripts": {
-        "start": "beefy example/main.js:example/bundle.js",
-        "prepublish": "browserify ./example/main.js | uglifyjs -c > ./example/bundle.js"
+        "grunt": "~0.4.5",
+        "grunt-browserify": "~3.0.1"
     }
 }
