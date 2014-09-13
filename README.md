@@ -13,8 +13,8 @@ Get started with the example
 ----------------------------
 
 * Run `npm install`
-* Run `npm start`
-* Open `http://localhost:9966/` in your browser and start hacking
+* Run `grunt` or `grunt dev`
+* Open `index.html` in your browser
 
 
 How to use
