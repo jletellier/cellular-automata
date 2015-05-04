@@ -3,7 +3,8 @@ var _ = langeroids._;
 
 var ComponentManager = require('langeroids/lib/component-manager');
 var AnimationLoop = require('langeroids/lib/animation-loop');
-var Canvas2dRenderer = require('langeroids/lib/canvas-2d-renderer');
+
+var PIXI = require('pixi.js');
 
 var Grid = require('../lib/grid');
 
@@ -18,14 +19,14 @@ var demoData = require('./demo-data');
 var cm = new ComponentManager();
 
 cm.add(new AnimationLoop());
-cm.add(new Canvas2dRenderer({
-    canvas: 'canvas',
-    width: 600,
-    height: 200
-}));
 
 cm.add({
     onInit: function() {
+        this.renderer = new PIXI.WebGLRenderer(300, 100);
+        document.body.appendChild(this.renderer.view);
+
+        this.graphics = new PIXI.Graphics();
+
         this.automata = {
             'gameOfLife': new GameOfLife(),
             'briansBrain': new BriansBrain(),
@@ -64,9 +65,8 @@ cm.add({
             }
         }
 
-        var renderer = this.getComponent('renderer');
-        this.cellWidth = Math.round(renderer.width / this.grid.width);
-        this.cellHeight = Math.round(renderer.height / this.grid.height);
+        this.cellWidth = Math.round(this.renderer.width / this.grid.width);
+        this.cellHeight = Math.round(this.renderer.height / this.grid.height);
 
         this.demoIsInitialized = true;
     },
@@ -96,18 +96,20 @@ cm.add({
 
             this.grid.update();
         }
+        this.draw();
     },
 
-    onDraw: function(renderer) {
-        var ctx = renderer.ctx;
-        renderer.clear('rgb(0,0,0)');
+    draw: function() {
+        var graphics = this.graphics;
+        graphics.clear();
 
         var borderColors = this.roundData.borderColors;
-        if (borderColors.length === 1) ctx.strokeStyle = borderColors[0];
+        if (borderColors.length === 1) {
+            graphics.lineStyle(1, borderColors[0][0], borderColors[0][1]);
+        }
 
         var fillColors = this.roundData.fillColors;
-        if (!fillColors.length) ctx.fillStyle = 'rgba(23, 84, 187, 0.8)';
-        else if (fillColors.length === 1) ctx.fillStyle = fillColors[0];
+        if (!fillColors.length) fillColors = [ [ 0, 0 ], [ 0x1754bb, 0.8 ] ];
 
         // draw grid
         for (var y = 0; y < this.grid.height; y++) {
@@ -115,20 +117,18 @@ cm.add({
                 var state = this.grid.getCell(x, y);
 
                 if (borderColors.length > 1) {
-                    ctx.strokeStyle = borderColors[state || 0];
-                }
-                if (borderColors.length) {
-                    ctx.strokeRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
+                    graphics.lineStyle(1, borderColors[state || 0][0], borderColors[state || 0][1]);
                 }
 
                 if (state) {
-                    if (fillColors.length > 1) {
-                        ctx.fillStyle = fillColors[state];
-                    }
-                    ctx.fillRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
+                    graphics.beginFill(fillColors[state][0], fillColors[state][1]);
                 }
+                graphics.drawRect(x * this.cellWidth, y * this.cellHeight, this.cellWidth, this.cellHeight);
+                graphics.endFill();
             }
         }
+
+        this.renderer.render(this.graphics);
     }
 });
 

@@ -5,12 +5,12 @@ module.exports = [
         automaton: 'fractalLike',
         step: 250,
         lifetime: 60,
-        borderColors: [ ],
+        borderColors: [ [ 0, 0 ] ],
         fillColors: [
-            '',
-            'rgba(43, 138, 226, 0.3)',
-            'rgba(138, 43, 226, 1.0)',
-            'rgba(138, 43, 226, 0.6)'
+            [ 0, 0 ],
+            [ 0x2b8ae2, 0.3 ],
+            [ 0x8a2be2, 1.0 ],
+            [ 0x8a2be2, 0.6 ]
         ],
         cells: [
             [ 149, 49, 2 ],
@@ -23,11 +23,11 @@ module.exports = [
         automaton: 'briansBrain',
         step: 125,
         lifetime: 100,
-        borderColors: [],
+        borderColors: [ [ 0, 0 ] ],
         fillColors: [
-            '',
-            'rgba(23, 187, 84, 0.8)',
-            'rgba(23, 187, 84, 0.5)'
+            [ 0, 0 ],
+            [ 0x17bb54, 0.8 ],
+            [ 0x17bb54, 0.5 ]
         ],
         randomCells: true
     },
@@ -37,8 +37,11 @@ module.exports = [
         automaton: 'highLife',
         step: 40,
         lifetime: 380,
-        borderColors: [ 'rgba(187, 84, 23, 0.1)' ],
-        fillColors: [ 'rgba(187, 84, 23, 0.8)' ],
+        borderColors: [ [ 0xbb5417, 0.1 ] ],
+        fillColors: [
+            [ 0, 0 ],
+            [ 0xbb5417, 0.8 ]
+        ],
         cells: [
             // Replicator
             [ 72, 25, 1 ],
@@ -61,8 +64,8 @@ module.exports = [
         automaton: 'gameOfLife',
         step: 80,
         lifetime: 500,
-        borderColors: [ 'rgba(23, 84, 187, 0.1)' ],
-        fillColors: [ 'rgba(23, 84, 187, 0.8)' ],
+        borderColors: [ [ 0x1754bb, 0.1 ] ],
+        fillColors: [],
         cells: [
             // R-Pentomino
             [ 74, 25, 1 ],
@@ -79,16 +82,16 @@ module.exports = [
         step: 250,
         lifetime: 100,
         borderColors: [
-            'rgba(255, 255, 255, 0.1)',
-            'rgba(0, 0, 0, 0.8)',
-            'rgba(0, 0, 0, 0.8)',
-            'rgba(0, 0, 0, 0.8)'
+            [ 0xffffff, 0.1 ],
+            [ 0, 0.8 ],
+            [ 0, 0.8 ],
+            [ 0, 0.8 ]
         ],
         fillColors: [
-            '',
-            'rgba(0, 128, 255, 1.0)',
-            'rgba(255, 64, 0, 1.0)',
-            'rgba(255, 215, 0, 1.0)'
+            [ 0, 0 ],
+            [ 0x0080ff, 1.0 ],
+            [ 0xff4000, 1.0 ],
+            [ 0xffd700, 1.0 ]
         ],
         cells: [
             // conductors
